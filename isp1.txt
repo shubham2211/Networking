@@ -1,0 +1,43 @@
+log "/var/log/bird.log" all;
+
+router id 10.3.1.242;
+define  myas = 111;
+
+function avoid_private_ips()
+prefix set private_ips;
+{
+    private_ips =[10.0.0.0/8+ ,172.16.0.0/12+ ,192.168.0.0/16+ ,169.254.0.0/16+ ];
+
+    if net ~ private_ips then return true;
+    return false;
+}
+
+
+filter bgp_in {
+    if avoid_private_ips()    then reject;
+    else accept;
+}
+
+protocol kernel {
+        export all;
+}
+
+protocol device {
+    scan time 10;        
+}
+
+protocol static {
+    route 10.3.1.0/24 via 10.3.1.242;
+    route 10.4.3.0/24 via 10.3.1.242;
+    route 22.222.22.22/32 via 10.3.1.242;
+}
+
+protocol bgp {
+    local as myas;
+    description "MY ROUTE SERVER CLIENT";
+    neighbor 10.3.1.250 as 999;
+    next hop self;
+    route limit 10000;
+    import filter bgp_in;
+    export all;
+}

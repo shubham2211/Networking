@@ -1,0 +1,25 @@
+
+Implementation of idea proposed in "Floodless in SEATTLE: A Scalable Ethernet Architecture for Large Enterprises" , 
+By Changhoon Kim,Matthew Caesar,Jennifer Rexford
+SIGCOMM’08, August 17–22, 2008, Seattle, Washington, USA.2008 ACM
+
+Abstract: Abstract: Abstract:
+The main aim of the protocol is to store and retrieve mappings between MAC address and route 
+
+To Run the implementation:
+
+1. Run aliases.sh by first assigning it executable permissions using 'sudo chmod 777 aliases.sh'
+
+2. Become root user by using 'sudo su'
+
+3. Run aliases.sh by using './aliases.sh'
+
+4. Use 'python filename.py' to run the following python files in the given order on separate  	terminals:
+	a. switch1server.py
+	b. switch2server.py
+	c. switch3server.py
+	d. switch1client.py
+	e. switch2client.py
+	f. switch3client.py
+
+5. The results will be displayed on terminals after 1 minute

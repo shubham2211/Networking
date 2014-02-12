@@ -1,0 +1,96 @@
+/*
+ *    Route server configuration 
+ */
+
+log "/var/log/bird.log" all;
+log syslog all;
+
+router id 10.3.1.250;
+define myas = 999;
+
+protocol device { }
+
+# special IP addresses
+function avoid_ips()
+prefix set ips;
+{
+  ips = [169.254.0.0/16+, 172.16.0.0/12+, 192.168.0.0/16+, 10.0.0.0/8+];
+  if net ~ ips then return true;
+  return false;
+}
+
+#########################
+# basic protocol template
+
+template bgp PEERS {
+  local as myas;
+  import all;
+  export all;
+  route limit 10000;
+  rs client;
+}
+protocol static static_bgp {
+        route 4.4.0.0/16 via 10.3.1.250;
+        route 169.254.0.1/32 via 10.3.1.250;
+}
+
+##########################
+
+# Configuration of BGP peer follows
+
+### AS111 - Member1
+filter bgp_in_AS111
+{
+  if avoid_ips() then reject;
+  else if (bgp_path.first != 111 ) then reject;
+  else accept;
+}
+
+protocol bgp R111x1 from PEERS {
+  description "Member 1 - peer 1";
+  neighbor 10.3.1.242 as 111;
+  import filter bgp_in_AS111;
+
+}
+
+### AS222 - Member2
+filter bgp_in_AS222
+{
+  if ! (avoid_ips()) then reject;
+  if (bgp_path.first != 222 ) then reject;
+  accept;
+}
+
+protocol bgp R222x1 from PEERS {
+  description "Member 2 - peer 1";
+  neighbor 10.3.1.254 as 222;
+  import filter bgp_in_AS222;
+}
+
+### AS333 - Member3
+filter bgp_in_AS333
+{
+  if ! (avoid_ips()) then reject;
+  if (bgp_path.first != 333 ) then reject;
+  accept;
+}
+
+protocol bgp R333x1 from PEERS {
+  description "Member 3 - peer 1";
+  neighbor 10.3.1.150 as 333;
+  import filter bgp_in_AS333;
+}
+
+### AS444 - Member4
+filter bgp_in_AS444
+{
+  if ! (avoid_ips()) then reject;
+  if (bgp_path.first != 444 ) then reject;
+  accept;
+}
+
+protocol bgp R444x1 from PEERS {
+  description "Member 4 - peer 1";
+  neighbor 10.3.1.15 as 444;
+  import filter bgp_in_AS444;
+}

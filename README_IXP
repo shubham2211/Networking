@@ -1,0 +1,50 @@
+1. ISP router details:
+
+AS: 111
+IPv4 network: 22.222.22.22/32
+Peering address IPv4: 10.3.1.242
+
+AS: 222
+IPv4 network: 40.59.10.24/32
+Peering address IPv4: 10.3.1.254
+
+AS: 333
+IPv4 network: 92.15.60.30/32
+Peering address IPv4: 10.3.1.150
+
+AS: 444
+IPv4 network: 56.32.72.60/32
+Peering address IPv4: 10.3.1.15
+
+2. Route Server(IXP)
+
+AS: 999
+IPv4 address: 10.3.1.250
+
+3. Installation of BiRD on Linux:
+
+	root@debian:~#  apt-get install bird
+
+4.Linux by default doesnt forwards network traffic, so we must turn forwarding on for IPv4 on our server this can be done with the following command on the shell:
+
+	root@debian-quagga:~# sysctl net.ipv4.ip_forward=1
+	net.ipv4.ip_forward = 1
+
+5. Use the following configuration files and copy them to default bird.conf on separate laptops:
+	q5isp1.txt
+	q5isp2.txt
+	q5isp3.txt
+	q5isp4.txt
+	q5rs.txt
+
+6. To start the bird process type following commands:
+	root@debian-bird:~# bird
+	root@debian-bird:~# birdc
+
+7.If you want to check our neighbour BiRD gives as a bunch of information
+
+	bird> show protocols all bgp1
+
+8.Show routes in RIB from BGP
+
+	bird> show route protocol bgp1

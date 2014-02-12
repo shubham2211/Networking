@@ -1,5 +1,10 @@
-Networking pcapIndex
+pcapIndex
 ==========
+
+Implementation of idea presented in  "pcapIndex: An Index for Network Packet Traces with Legacy Compatibility"
+By - Francesco Fusco, Xenofontas Dimitropoulos, Michail Vlachos, Luca Deri
+
+To run the implementation:
 
 1. Compile parser.c using 'gcc parser.c -lpcap'
 

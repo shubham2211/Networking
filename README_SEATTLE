@@ -1,10 +1,47 @@
-
 Implementation of idea proposed in "Floodless in SEATTLE: A Scalable Ethernet Architecture for Large Enterprises" , 
 By Changhoon Kim,Matthew Caesar,Jennifer Rexford
 SIGCOMM’08, August 17–22, 2008, Seattle, Washington, USA.2008 ACM
 
-Abstract: Abstract: Abstract:
-The main aim of the protocol is to store and retrieve mappings between MAC address and route 
+Abstract: 
+
+The main aim of the protocol is to store and retrieve the mappings between the MAC address and route to the destination.
+The protocol basically takes care that when any new host is discovered (which will have a unique MAC and IP address), the
+access switch to that host needs to run a resolver. This resolver function is a Hashing function that maps the MAC and 
+IP address to another switch.
+
+
+Description:
+
+
+To publish a (key, value) pair, a switch first uses a hash function F to find out which switch it will map  to k to, using a switch identifier F(k) = rk. It then tells switch rk to store the mapping (k, v). rk becomes the  resolver for k.
+
+1.   Adding a new host:
+Learning of host's MAC and IP address takes place via the mechanisms mentioned in the paper (ARP/DHCP message snooping, etc). Once the access switch of a host learns its MAC and IP address, its hashes the MAC and IP address to get the address (switch identifier) of the resolver switches (which can be different) and then sends a Store message to the respective resolver switches with (MAC->location) and (IP->MAC,location) mappings in the body of the message. If the resolver switches' successfully store the mappings, they send a Store Acknowledge message to the access switch. If the access switch doesn't receive a Store Acknowledge message within a certain amount of time (timeout), it sends the mappings again using the Store message.
+
+2.   Removing a Host:
+When a host connected to a access switch departs then we need to remove its entry from the resolver switch.  To do so we take the IP of the departing switch and apply hash function to it to identify its resolver switch where its mapping is stored. Now we delete the mapping from that switch and then send a Delete Acknowledge message.
+
+3.   Keep Alive:
+To maintain the binding in the resolver switch for the host  we send keep alive message to that switch from the access switch. Each keep alive message increments the session period by 3 minutes i.e for that more period the resolver switch maintains that particular hosts' binding. If the time to live expires the binding is removed from the resolver switch. 
+Limitations:
+
+1.   Every switch can observe every other switch in the network, i.e. a switch can sent a packet to any other switch via shortest path. Hence, there is no need to worry about the link state protocol. It is assumed to be running.
+
+2.   SEATTLE runs a discovery protocol to determine  which links are attached to hosts and which
+are attached to switches. SEATTLE enables shortest‐  path forwarding by running a link state
+protocol.  SEATTLE's link state protocol maintains only the switch–level topology.  Link State
+Protocol as taught by sir in class is at Application Level and the data is stored in the Data Link
+Layer.
+
+3.   A different switch may look up the value of k by using the same hash function to identify which switch is the resolver for a different k, because all switches know all the other switches
+identifiers via link‐  state advertisement.
+Requirements:
+
+
+We create an three aliases for the loop-back interface so that they can act as virtual access switch point
+IP address . To do this we create an aliases.sh file.
+By setting or aliasing the loopback device to the cluster address, the load balanced server machines will accept a packet that was addressed to the cluster address.
+
 
 To Run the implementation:
 
